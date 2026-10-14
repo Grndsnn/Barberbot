@@ -412,6 +412,39 @@ function setupEventListeners() {
     botModal?.classList.remove('active');
   });
 
+  // Barra de Navegación Inferior para Celulares
+  const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
+  const setMobileActive = (btnId) => {
+    mobileNavBtns.forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId)?.classList.add('active');
+  };
+
+  document.getElementById('mob-nav-agenda')?.addEventListener('click', () => {
+    setMobileActive('mob-nav-agenda');
+    waDrawer?.classList.remove('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('mob-nav-finanzas')?.addEventListener('click', () => {
+    setMobileActive('mob-nav-finanzas');
+    openFinancesModal();
+  });
+
+  document.getElementById('mob-nav-clientes')?.addEventListener('click', () => {
+    setMobileActive('mob-nav-clientes');
+    openClientsModal();
+  });
+
+  document.getElementById('mob-nav-bot')?.addEventListener('click', () => {
+    setMobileActive('mob-nav-bot');
+    botModal?.classList.add('active');
+  });
+
+  document.getElementById('mob-nav-chat')?.addEventListener('click', () => {
+    setMobileActive('mob-nav-chat');
+    waDrawer?.classList.toggle('active');
+  });
+
   // Toggle Bot Power
   document.getElementById('btn-toggle-bot-power')?.addEventListener('click', () => {
     state.botActive = !state.botActive;

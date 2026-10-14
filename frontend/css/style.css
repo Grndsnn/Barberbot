@@ -857,3 +857,224 @@ header.top-header {
   background: #f8fafc;
 }
 
+/* ==============================================================================
+   DISEÑO 100% RESPONSIVE Y MOBILE FIRST (PARA CELULARES & TABLETS)
+   ============================================================================== */
+
+/* Barra de Navegación Inferior Móvil (Sticky Bottom) */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0f172a;
+  border-top: 1px solid #1e293b;
+  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px)) 0.5rem;
+  z-index: 1000;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.mobile-nav-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+.mobile-nav-btn i {
+  font-size: 1.2rem;
+}
+.mobile-nav-btn:hover, .mobile-nav-btn.active {
+  color: #fbbf24;
+}
+.mobile-nav-btn.highlight-wa {
+  color: #25D366;
+}
+
+/* Breakpoint Móvil / Tablet (≤ 900px) */
+@media (max-width: 900px) {
+  body {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  /* Ocultar barra lateral de escritorio y mostrar la barra inferior */
+  aside.sidebar {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+
+  main.main-content {
+    overflow: visible;
+    height: auto;
+    width: 100%;
+  }
+
+  /* Padding inferior para que la barra móvil no tape contenido */
+  .content-body {
+    padding: 1rem 0.85rem 5.5rem 0.85rem !important;
+    overflow: visible;
+  }
+
+  /* Cabecera superior adaptada a pantallas táctiles */
+  .top-header {
+    padding: 0.85rem 1rem !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .header-left {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .header-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem !important;
+    width: 100%;
+  }
+
+  .btn-device-pill {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  .btn-whatsapp {
+    display: none; /* Se accede directamente desde el botón inferior 'Chat' */
+  }
+
+  .btn-primary {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+  }
+
+  /* Oportunidad / Banner de Estados en columna vertical */
+  .opportunity-card {
+    padding: 0.9rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .opp-content {
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+  }
+  .opp-actions {
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  .btn-publish-status {
+    width: 100% !important;
+    padding: 0.8rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* KPIs en cuadrícula de 2 columnas táctiles */
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+  .kpi-card {
+    padding: 0.85rem !important;
+  }
+  .kpi-value {
+    font-size: 1.35rem !important;
+  }
+
+  /* Columnas de Barberos apiladas en vertical para lectura cómoda */
+  .columns-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    background: transparent !important;
+  }
+  .barber-col {
+    border-right: none !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Chat Simulator en pantalla completa en celular (Sensación 100% App Nativa) */
+  .wa-floating-btn {
+    display: none !important; /* Reemplazado por el botón 'Chat' de la barra inferior */
+  }
+
+  .wa-drawer {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100vh !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+    z-index: 99999 !important;
+  }
+  .wa-drawer.active {
+    display: flex !important;
+  }
+
+  /* Modales optimizados para móvil */
+  .clean-modal-box {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 1.25rem 1rem !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    white-space: nowrap;
+  }
+}
+
+/* Breakpoint para pantallas muy pequeñas (≤ 420px) */
+@media (max-width: 420px) {
+  .date-selector-pill {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.74rem;
+  }
+  .kpi-value {
+    font-size: 1.2rem !important;
+  }
+  .page-title {
+    font-size: 1.05rem;
+  }
+}
+
+
