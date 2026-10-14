@@ -5,6 +5,7 @@ import { appointmentService } from '../backend/src/services/appointmentService.j
 import { financeService } from '../backend/src/services/financeService.js';
 import { aiClassifier } from '../backend/src/services/aiClassifier.js';
 import { QueueWorker } from '../backend/src/services/queueWorker.js';
+import { gapDetectorService } from '../backend/src/services/gapDetectorService.js';
 import { db } from '../backend/src/config/database.js';
 
 test('1. Barber Service - Debe listar los 2 barberos activos de la barbería (Toño y Memo)', () => {
@@ -210,4 +211,29 @@ test('10. Servicios y Tarifas - Corte Normal a 22k y Corte con Barba a 27k', () 
   assert.ok(perfiladoBarba, 'Debe existir perfilado de barba');
   assert.equal(perfiladoBarba.price, 15000, 'El perfilado de barba debe ser 15.000 ($15k)');
 });
+
+test('11. Gap Detector - Debe escanear la agenda, detectar huecos libres y generar copy para Estados', () => {
+  const tono = barberService.findBarberByName('Toño');
+  const analysis = gapDetectorService.detectGaps(tono.id, '2026-10-15');
+
+  assert.ok(analysis, 'Debe generar el análisis para Toño');
+  assert.ok(analysis.totalGaps > 0, 'Debe detectar al menos un hueco disponible');
+  assert.ok(analysis.potentialRevenue > 0, 'Debe calcular el valor potencial de los huecos');
+  assert.match(analysis.proposedCopy, /¡Últimos turnos disponibles hoy con Toño!/, 'El copy debe ser atractivo y personalizado');
+  assert.equal(analysis.status, 'pending_approval', 'El estado inicial debe ser pendiente de aprobación');
+});
+
+test('12. Human-in-the-Loop - El barbero autoriza la publicación del Estado y se envía a status@broadcast', () => {
+  const tono = barberService.findBarberByName('Toño');
+  const publication = gapDetectorService.authorizeAndPublishStatus(tono.id);
+
+  assert.ok(publication.id, 'Debe generar un ID de publicación');
+  assert.equal(publication.status, 'published', 'Debe marcarse como publicado');
+  assert.equal(publication.target, 'status@broadcast', 'El destino debe ser el broadcast de Estados de WhatsApp');
+  assert.ok(publication.estimated_reach >= 450, 'El alcance estimado debe ser realista para los contactos del barbero');
+
+  const history = gapDetectorService.getPublishedStatuses();
+  assert.ok(history.length > 0, 'Debe guardarse en el historial de estados de WhatsApp');
+});
+
 

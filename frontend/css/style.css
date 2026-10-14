@@ -665,3 +665,195 @@ header.top-header {
   align-items: center;
   justify-content: center;
 }
+
+/* ==============================================================================
+   NUEVOS COMPONENTES: BOTÓN DISPOSITIVO QR, BANNER DE ESTADOS & MODALES
+   ============================================================================== */
+
+/* Botón Pastilla de Dispositivo en Header */
+.btn-device-pill {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-device-pill:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+/* Tarjeta / Banner de Oportunidad de Huecos (Marketing IA) */
+.opportunity-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid #10b981;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+}
+.opportunity-card.published {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-color: #10b981;
+}
+
+.opp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #10b981;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.6rem;
+}
+
+.opp-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.opp-info {
+  flex: 1;
+}
+
+.opp-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.opp-risk-pill {
+  font-size: 0.72rem;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.opp-desc {
+  font-size: 0.84rem;
+  color: #475569;
+  line-height: 1.45;
+  margin-bottom: 0.75rem;
+}
+
+/* Vista previa de Estado de WhatsApp */
+.wa-status-preview-box {
+  background: #ffffff;
+  border: 1px dashed #25D366;
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.wa-status-header {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.wa-status-text {
+  font-size: 0.8rem;
+  color: #1e293b;
+  line-height: 1.45;
+  font-family: inherit;
+  white-space: pre-line;
+}
+
+.opp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+  justify-content: center;
+}
+
+.btn-publish-status {
+  background: #25D366;
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: background 0.2s;
+  box-shadow: 0 2px 4px rgba(37, 211, 102, 0.25);
+}
+.btn-publish-status:hover {
+  background: #1eb857;
+}
+
+.btn-secondary-opp {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+.btn-secondary-opp:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+/* Tablas para los modales de Finanzas y Clientes */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin-top: 0.75rem;
+}
+.modal-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+.modal-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+.modal-table tr:hover td {
+  background: #f8fafc;
+}
+

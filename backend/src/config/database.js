@@ -116,13 +116,93 @@ class DatabaseManager {
         reminder_24h_sent: true,
         reminder_2h_sent: true,
         source: 'whatsapp'
+      },
+      {
+        id: 'apt-002',
+        barber_id: '11111111-1111-1111-1111-111111111111',
+        service_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        client_name: 'Juan Camilo Toro',
+        client_phone: '+573124443322',
+        datetime: getTodayAt(11, 30),
+        end_datetime: getTodayAt(12, 5),
+        status: 'confirmed',
+        payment_method: 'pending',
+        total_amount: 22000,
+        commission_amount: 9900,
+        notes: 'Cliente regular WhatsApp.',
+        reminder_24h_sent: true,
+        reminder_2h_sent: false,
+        source: 'whatsapp'
+      },
+      {
+        id: 'apt-003',
+        barber_id: '11111111-1111-1111-1111-111111111111',
+        service_id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
+        client_name: 'Mateo Morales',
+        client_phone: '+573158887766',
+        datetime: getTodayAt(13, 30),
+        end_datetime: getTodayAt(14, 15),
+        status: 'confirmed',
+        payment_method: 'pending',
+        total_amount: 27000,
+        commission_amount: 12150,
+        notes: 'Corte + Barba perfilada.',
+        reminder_24h_sent: true,
+        reminder_2h_sent: true,
+        source: 'whatsapp'
+      },
+      {
+        id: 'apt-004',
+        barber_id: '22222222-2222-2222-2222-222222222222',
+        service_id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
+        client_name: 'Sebastián Ríos',
+        client_phone: '+573007771122',
+        datetime: getTodayAt(10, 30),
+        end_datetime: getTodayAt(11, 15),
+        status: 'completed',
+        payment_method: 'cash',
+        total_amount: 27000,
+        commission_amount: 10800,
+        notes: 'Atendido por Memo, pagó efectivo.',
+        reminder_24h_sent: true,
+        reminder_2h_sent: true,
+        source: 'dashboard'
+      },
+      {
+        id: 'apt-005',
+        barber_id: '22222222-2222-2222-2222-222222222222',
+        service_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        client_name: 'Nicolás Quintero',
+        client_phone: '+573183332211',
+        datetime: getTodayAt(14, 0),
+        end_datetime: getTodayAt(14, 35),
+        status: 'confirmed',
+        payment_method: 'pending',
+        total_amount: 22000,
+        commission_amount: 8800,
+        notes: 'Fade medio.',
+        reminder_24h_sent: true,
+        reminder_2h_sent: false,
+        source: 'whatsapp'
       }
     ];
 
+    // --- ESTADO DEL DISPOSITIVO WHATSAPP VINCULADO (QR) ---
+    this.whatsapp_device = {
+      connected: true,
+      phone: '+573001234567',
+      barber_name: 'Toño El Máster',
+      battery: 94,
+      pushname: 'Barbería El Máster',
+      status_broadcast_enabled: true,
+      paired_at: new Date(Date.now() - 3600000 * 4).toISOString() // hace 4 horas
+    };
+
+    // Historial de Estados de WhatsApp publicados
+    this.whatsapp_statuses = [];
+
     // --- NUEVAS TABLAS PARA ESTADO EN POSTGRES ---
     // 1. Conversaciones (phone, status: active | blocked | bot_paused | suspended)
-    //    Se inicia vacío para que cada sesión de prueba empiece con el flujo correcto.
-    //    Los datos de demo son solo en `this.clients` para referencia de visitas previas.
     this.conversations = [];
 
     // 2. Mensajes persistidos (historial completo)

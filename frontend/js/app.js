@@ -1,5 +1,6 @@
 /**
- * Recepción IA - SaaS BarberBot | Frontend Dashboard Logic (Minimalist & Crisp)
+ * Recepción IA - SaaS BarberBot | Frontend Dashboard Logic
+ * Control Operativo, Detección de Huecos, Estados de WhatsApp & CRM
  */
 
 const API_BASE = window.location.origin.includes(':5050') 
@@ -11,7 +12,12 @@ let state = {
   services: [],
   appointments: [],
   finances: null,
-  selectedAppointment: null
+  selectedAppointment: null,
+  marketingGaps: [],
+  device: null,
+  clients: [],
+  botActive: true,
+  statusPublished: false
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -33,21 +39,29 @@ function setupDateLabel() {
 
 async function loadDashboardData() {
   try {
-    const [barbersRes, servicesRes, appointmentsRes, financesRes] = await Promise.all([
-      fetch(`${API_BASE}/api/barbers`).then(r => r.json()),
-      fetch(`${API_BASE}/api/services`).then(r => r.json()),
-      fetch(`${API_BASE}/api/appointments`).then(r => r.json()),
-      fetch(`${API_BASE}/api/finances/daily-summary`).then(r => r.json())
+    const [barbersRes, servicesRes, appointmentsRes, financesRes, gapsRes, deviceRes, clientsRes] = await Promise.all([
+      fetch(`${API_BASE}/api/barbers`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/services`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/appointments`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/finances/daily-summary`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/marketing/gaps`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/whatsapp/device`).then(r => r.json()).catch(() => ({ success: false })),
+      fetch(`${API_BASE}/api/clients`).then(r => r.json()).catch(() => ({ success: false }))
     ]);
 
     if (barbersRes.success) state.barbers = barbersRes.data;
     if (servicesRes.success) state.services = servicesRes.data;
     if (appointmentsRes.success) state.appointments = appointmentsRes.data;
     if (financesRes.success) state.finances = financesRes.data;
+    if (gapsRes.success) state.marketingGaps = gapsRes.data;
+    if (deviceRes.success) state.device = deviceRes.data;
+    if (clientsRes.success) state.clients = clientsRes.data;
 
     renderKPIs();
     renderBarberColumns();
     populateFormSelects();
+    renderMarketingOpportunity();
+    renderDeviceStatus();
   } catch (error) {
     console.error('Error cargando datos del dashboard:', error);
   }
@@ -75,6 +89,49 @@ function renderKPIs() {
     `$${(metricas_caja.comisiones_barberos || 0).toLocaleString('es-CO')}`;
   document.getElementById('kpi-ganancia-neta').textContent = 
     `Ganancia neta barbería: $${(metricas_caja.ganancia_neta_barberia || 0).toLocaleString('es-CO')}`;
+}
+
+function renderMarketingOpportunity() {
+  const oppSection = document.getElementById('opportunity-section');
+  if (!oppSection || state.statusPublished) return;
+
+  const opportunity = state.marketingGaps && state.marketingGaps.length > 0 
+    ? state.marketingGaps[0] 
+    : null;
+
+  if (!opportunity || opportunity.totalGaps === 0) {
+    oppSection.style.display = 'none';
+    return;
+  }
+
+  oppSection.style.display = 'block';
+  const timesFormatted = opportunity.gaps.map(g => g.time || g.label).join(', ');
+
+  const descEl = document.getElementById('opp-desc-text');
+  if (descEl) {
+    descEl.innerHTML = `El bot analizó la agenda de hoy y detectó <strong>${opportunity.totalGaps} huecos muertos</strong> con <strong>${opportunity.barber_name}</strong> (${timesFormatted}). ¿Deseas publicarlos en tus <strong>Estados de WhatsApp</strong> para que tus contactos los aparten de inmediato?`;
+  }
+
+  const badgeEl = document.getElementById('opp-revenue-badge');
+  if (badgeEl) {
+    badgeEl.textContent = `+$${opportunity.potentialRevenue.toLocaleString('es-CO')} COP en juego`;
+  }
+
+  const copyEl = document.getElementById('wa-status-preview-text');
+  if (copyEl) {
+    copyEl.innerHTML = opportunity.proposedCopy.replace(/\n/g, '<br>');
+  }
+}
+
+function renderDeviceStatus() {
+  const pillText = document.getElementById('device-pill-text');
+  if (!pillText) return;
+
+  if (state.device && state.device.connected) {
+    pillText.textContent = `📱 ${state.device.barber_name.split(' ')[0]} (${state.device.phone}) 🟢`;
+  } else {
+    pillText.textContent = '📱 Vincular WhatsApp 🔴';
+  }
 }
 
 function renderBarberColumns() {
@@ -169,7 +226,6 @@ function renderBarberAppointments(barber, appointments) {
     `;
   });
 
-  // Ranura sutil de hueco libre
   html += `
     <div class="clean-free-slot" data-barber-id="${barber.id}" data-time-iso="${new Date().toISOString()}">
       <span><i class="fa-regular fa-calendar-plus"></i> Espacio libre disponible</span>
@@ -288,7 +344,7 @@ function openNewAppointmentModalWithSlot(barberId, timeIso) {
 }
 
 function setupEventListeners() {
-  // Drawer de WhatsApp
+  // Drawer de WhatsApp Simulator
   const waDrawer = document.getElementById('wa-drawer');
   const btnToggleWa = document.getElementById('btn-toggle-wa');
   const btnOpenWaTop = document.getElementById('btn-open-wa-drawer');
@@ -299,7 +355,7 @@ function setupEventListeners() {
   btnOpenWaTop?.addEventListener('click', toggleDrawer);
   btnCloseWa?.addEventListener('click', () => waDrawer?.classList.remove('active'));
 
-  // Modales
+  // Modales base
   document.getElementById('btn-close-appointment-modal')?.addEventListener('click', () => {
     document.getElementById('appointment-modal').classList.remove('active');
   });
@@ -313,7 +369,97 @@ function setupEventListeners() {
     document.getElementById('new-appointment-modal').classList.remove('active');
   });
 
-  // Enviar Formulario de Cita
+  // Modal 1: Dispositivo QR
+  const deviceModal = document.getElementById('device-modal');
+  document.getElementById('btn-device-pairing')?.addEventListener('click', () => {
+    deviceModal?.classList.add('active');
+  });
+  document.getElementById('btn-close-device-modal')?.addEventListener('click', () => {
+    deviceModal?.classList.remove('active');
+  });
+  document.getElementById('btn-reconnect-device')?.addEventListener('click', () => {
+    alert('📱 Teléfono reconectado. Sesión de WhatsApp sincronizada correctamente.');
+    deviceModal?.classList.remove('active');
+  });
+
+  // Modal 2: Control de Caja & Comisiones (Sidebar)
+  const financesModal = document.getElementById('finances-modal');
+  document.getElementById('nav-finanzas')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openFinancesModal();
+  });
+  document.getElementById('btn-close-finances-modal')?.addEventListener('click', () => {
+    financesModal?.classList.remove('active');
+  });
+
+  // Modal 3: Directorio de Clientes (Sidebar)
+  const clientsModal = document.getElementById('clients-modal');
+  document.getElementById('nav-clientes')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openClientsModal();
+  });
+  document.getElementById('btn-close-clients-modal')?.addEventListener('click', () => {
+    clientsModal?.classList.remove('active');
+  });
+
+  // Modal 4: Estado del Bot (Sidebar)
+  const botModal = document.getElementById('bot-status-modal');
+  document.getElementById('nav-config')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    botModal?.classList.add('active');
+  });
+  document.getElementById('btn-close-bot-modal')?.addEventListener('click', () => {
+    botModal?.classList.remove('active');
+  });
+
+  // Toggle Bot Power
+  document.getElementById('btn-toggle-bot-power')?.addEventListener('click', () => {
+    state.botActive = !state.botActive;
+    const btn = document.getElementById('btn-toggle-bot-power');
+    if (state.botActive) {
+      btn.textContent = '🟢 Bot Activo';
+      btn.className = 'btn btn-primary';
+    } else {
+      btn.textContent = '⏸️ Bot Pausado (Atención Humana)';
+      btn.className = 'btn btn-secondary-opp';
+    }
+  });
+
+  // Autorizar y Publicar en Estados de WhatsApp
+  document.getElementById('btn-authorize-status')?.addEventListener('click', async () => {
+    const opp = state.marketingGaps && state.marketingGaps[0];
+    if (!opp) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/marketing/authorize-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barber_id: opp.barber_id })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        state.statusPublished = true;
+        const oppCard = document.getElementById('opportunity-section');
+        oppCard.classList.add('published');
+
+        document.getElementById('opp-actions-box').innerHTML = `
+          <div style="background: #ecfdf5; border: 1px solid #10b981; color: #047857; padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>¡Publicado en Estados de WhatsApp! (~${data.data.estimated_reach} personas alcanzadas)</span>
+          </div>
+        `;
+      }
+    } catch (err) {
+      alert('Error publicando estado: ' + err.message);
+    }
+  });
+
+  document.getElementById('btn-dismiss-opp')?.addEventListener('click', () => {
+    document.getElementById('opportunity-section').style.display = 'none';
+  });
+
+  // Enviar Formulario de Cita Manual
   document.getElementById('new-appointment-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const barberId = document.getElementById('form-barber-select').value;
@@ -358,7 +504,7 @@ function setupEventListeners() {
     }
   });
 
-  // Chatbot Simulator
+  // Chatbot Simulator Submit
   document.getElementById('wa-chat-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = document.getElementById('wa-message-input');
@@ -390,6 +536,98 @@ function setupEventListeners() {
       appendChatMessage('Error conectando con el bot.', 'in');
     }
   });
+}
+
+function openFinancesModal() {
+  const modal = document.getElementById('finances-modal');
+  const container = document.getElementById('finances-modal-content');
+  if (!modal || !container || !state.finances) return;
+
+  const { metricas_caja, desglose_barberos } = state.finances;
+
+  container.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.25rem;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem;">
+        <div style="font-size: 0.75rem; color: #64748b;">Total Facturado:</div>
+        <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">$${(metricas_caja.total_ingresos || 0).toLocaleString('es-CO')}</div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem;">
+        <div style="font-size: 0.75rem; color: #64748b;">Comisiones Barberos:</div>
+        <div style="font-size: 1.15rem; font-weight: 700; color: #8b5cf6;">$${(metricas_caja.comisiones_barberos || 0).toLocaleString('es-CO')}</div>
+      </div>
+      <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 0.75rem;">
+        <div style="font-size: 0.75rem; color: #047857;">Ganancia Neta Barbería:</div>
+        <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">$${(metricas_caja.ganancia_neta_barberia || 0).toLocaleString('es-CO')}</div>
+      </div>
+    </div>
+
+    <h4 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Desglose de Comisiones por Barbero:</h4>
+    <table class="modal-table">
+      <thead>
+        <tr>
+          <th>Barbero</th>
+          <th>Tasa</th>
+          <th>Citas Atendidas</th>
+          <th>Total Facturado</th>
+          <th>Comisión a Pagar</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${(desglose_barberos || []).map(b => `
+          <tr>
+            <td><strong>${b.barber_name}</strong></td>
+            <td>${b.commission_rate}</td>
+            <td>${b.appointments_count} citas</td>
+            <td>$${(b.total_revenue || 0).toLocaleString('es-CO')}</td>
+            <td style="color: #8b5cf6; font-weight: 700;">$${(b.total_commission || 0).toLocaleString('es-CO')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  modal.classList.add('active');
+}
+
+function openClientsModal() {
+  const modal = document.getElementById('clients-modal');
+  const container = document.getElementById('clients-modal-content');
+  if (!modal || !container) return;
+
+  const clients = state.clients.length > 0 ? state.clients : [
+    { name: 'Andrés Felipe Gómez', phone: '+573105551122', total_visits: 6, tags: ['VIP', 'Fade regular'], notes: 'Cliente frecuente de Toño' },
+    { name: 'Juan Camilo Toro', phone: '+573124443322', total_visits: 3, tags: ['Corte Clásico'], notes: 'Prefiere corte los jueves' },
+    { name: 'Mateo Morales', phone: '+573158887766', total_visits: 4, tags: ['Barba', 'Combo'], notes: 'Puntual' }
+  ];
+
+  container.innerHTML = `
+    <table class="modal-table">
+      <thead>
+        <tr>
+          <th>Nombre del Cliente</th>
+          <th>WhatsApp</th>
+          <th>Visitas</th>
+          <th>Etiquetas</th>
+          <th>Notas</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${clients.map(c => `
+          <tr>
+            <td><strong>${c.name}</strong></td>
+            <td><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> ${c.phone}</td>
+            <td>${c.total_visits || 1}</td>
+            <td>
+              ${(c.tags || []).map(t => `<span style="font-size: 0.7rem; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; margin-right: 2px;">${t}</span>`).join('')}
+            </td>
+            <td style="color: #64748b; font-size: 0.78rem;">${c.notes || '-'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  modal.classList.add('active');
 }
 
 function appendChatMessage(text, direction) {

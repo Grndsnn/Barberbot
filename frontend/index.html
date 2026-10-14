@@ -63,10 +63,10 @@
         </div>
 
         <div class="header-right">
-          <div class="live-badge">
-            <span class="live-dot"></span>
-            <span>Meta WhatsApp Cloud API Conectado</span>
-          </div>
+          <button class="btn btn-device-pill" id="btn-device-pairing" title="Ver estado del teléfono del barbero">
+            <i class="fa-solid fa-qrcode" style="color: #25D366;"></i>
+            <span id="device-pill-text">📱 Toño (+573001234567) 🟢</span>
+          </button>
 
           <button class="btn btn-whatsapp" id="btn-open-wa-drawer">
             <i class="fa-brands fa-whatsapp"></i> Chat Simulator
@@ -80,6 +80,46 @@
 
       <!-- Cuerpo del Contenido Scrollable -->
       <div class="content-body">
+
+        <!-- Banner Inteligente: Detección de Huecos y Autorización de Estados de WhatsApp -->
+        <section class="opportunity-card" id="opportunity-section">
+          <div class="opp-badge">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> PILOTO IA MARKETING: ESTADOS DE WHATSAPP
+          </div>
+          <div class="opp-content">
+            <div class="opp-info">
+              <div class="opp-title">
+                <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.3rem;"></i>
+                <span>Huecos Libres Detectados en la Agenda</span>
+                <span class="opp-risk-pill" id="opp-revenue-badge">+$44.000 COP en juego</span>
+              </div>
+              <p class="opp-desc" id="opp-desc-text">
+                El bot analizó la agenda de hoy y detectó <strong>2 huecos muertos</strong> con <strong>Toño El Máster</strong>.
+                ¿Deseas publicarlos en los <strong>Estados de WhatsApp</strong> para que tus contactos los aparten de inmediato?
+              </p>
+              
+              <div class="wa-status-preview-box">
+                <div class="wa-status-header">
+                  <i class="fa-solid fa-eye" style="color: #10b981;"></i> Vista Previa del Estado de WhatsApp generado por IA:
+                </div>
+                <div class="wa-status-text" id="wa-status-preview-text">
+                  💈 *¡Últimos turnos de hoy con Toño!* ✂️🔥<br>
+                  Quedan libres: *03:00 p. m. y 06:30 p. m.*.<br>
+                  ¡Escríbeme *'Quiero turno'* ya para apartar el tuyo antes de que se llenen! 📲⚡
+                </div>
+              </div>
+            </div>
+
+            <div class="opp-actions" id="opp-actions-box">
+              <button class="btn btn-publish-status" id="btn-authorize-status">
+                <i class="fa-brands fa-whatsapp"></i> Autorizar y Publicar en Estados
+              </button>
+              <button class="btn btn-secondary-opp" id="btn-dismiss-opp" title="Descartar por hoy">
+                <i class="fa-solid fa-xmark"></i> Descartar
+              </button>
+            </div>
+          </div>
+        </section>
 
         <!-- Fila de 4 KPIs Sobrios -->
         <section class="kpi-row">
@@ -244,6 +284,103 @@
           <i class="fa-solid fa-check"></i> Confirmar y Guardar Cita
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal 1: Vincular Teléfono WhatsApp por Código QR -->
+  <div class="modal-backdrop" id="device-modal">
+    <div class="clean-modal-box" style="max-width: 480px; text-align: center;">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-device-modal">&times;</button>
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #0f172a;">
+        <i class="fa-solid fa-qrcode" style="color: #25D366; margin-right: 0.4rem;"></i> Vincular Teléfono del Barbero
+      </h3>
+      <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.25rem;">
+        Abre WhatsApp en el celular del barbero ➔ Menú (3 puntos) ➔ <strong>Dispositivos Vinculados</strong> ➔ Escanea este código QR.
+      </p>
+
+      <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; display: inline-block; margin-bottom: 1rem;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=BARBERBOT-WHATSAPP-PAIR-573001234567" alt="QR WhatsApp" style="width: 170px; height: 170px; display: block; margin: 0 auto; border-radius: 6px;">
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem;">Actualiza cada 45 segundos</div>
+      </div>
+
+      <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 0.85rem; text-align: left; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+          <span style="font-weight: 700; font-size: 0.85rem; color: #065f46;"><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.5rem;"></i> Estado: Dispositivo Conectado</span>
+          <span style="font-size: 0.75rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Batería: 94% 🔋</span>
+        </div>
+        <div style="font-size: 0.8rem; color: #047857;">
+          <strong>Teléfono:</strong> +57 300 123 4567 (Toño El Máster)<br>
+          <strong>Publicación en Estados:</strong> Habilitada para ~850 contactos
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-primary" id="btn-reconnect-device" style="flex: 1; justify-content: center;">
+          <i class="fa-solid fa-rotate-right"></i> Reconectar / Refrescar QR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Control de Caja y Liquidación de Comisiones -->
+  <div class="modal-backdrop" id="finances-modal">
+    <div class="clean-modal-box" style="max-width: 620px;">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-finances-modal">&times;</button>
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #0f172a;">
+        <i class="fa-solid fa-cash-register" style="color: #10b981; margin-right: 0.4rem;"></i> Control de Caja y Liquidación de Comisiones
+      </h3>
+      <div id="finances-modal-content">
+        <p style="color: #64748b; font-size: 0.85rem;">Cargando liquidación diaria...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Directorio de Clientes (CRM) -->
+  <div class="modal-backdrop" id="clients-modal">
+    <div class="clean-modal-box" style="max-width: 650px;">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-clients-modal">&times;</button>
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #0f172a;">
+        <i class="fa-regular fa-user" style="color: #2563eb; margin-right: 0.4rem;"></i> Directorio de Clientes Frecuentes
+      </h3>
+      <div id="clients-modal-content">
+        <p style="color: #64748b; font-size: 0.85rem;">Cargando clientes frecuentes...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Estado del Bot y Control de Atención Humana -->
+  <div class="modal-backdrop" id="bot-status-modal">
+    <div class="clean-modal-box" style="max-width: 520px;">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-bot-modal">&times;</button>
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #0f172a;">
+        <i class="fa-solid fa-robot" style="color: #8b5cf6; margin-right: 0.4rem;"></i> Estado y Control del Asistente Virtual
+      </h3>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a;">Modo Automático del Bot</div>
+            <div style="font-size: 0.78rem; color: #64748b;">Apaga el bot temporalmente si el barbero desea atender el chat manualmente.</div>
+          </div>
+          <button class="btn btn-primary" id="btn-toggle-bot-power" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+            🟢 Bot Activo
+          </button>
+        </div>
+      </div>
+
+      <div id="bot-queue-summary-box">
+        <h4 style="font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">Rendimiento del Sistema en Vivo:</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.8rem;">
+          <div style="background: #fff; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 6px;">
+            <div style="color: #64748b;">Velocidad de Ingesta:</div>
+            <div style="font-weight: 700; font-size: 1.1rem; color: #10b981;">&lt; 35 ms</div>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 6px;">
+            <div style="color: #64748b;">Modelo de Lenguaje:</div>
+            <div style="font-weight: 700; font-size: 1.1rem; color: #2563eb;">gpt-5-mini</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

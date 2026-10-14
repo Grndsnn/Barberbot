@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { appointmentController } from '../controllers/appointmentController.js';
 import { webhookController } from '../controllers/webhookController.js';
 import { financeController } from '../controllers/financeController.js';
+import { marketingController } from '../controllers/marketingController.js';
 
 const router = Router();
 
@@ -36,4 +37,12 @@ router.patch('/conversations/:id/status', webhookController.updateConversationSt
 router.get('/conversations/:id/messages', webhookController.getConversationMessages);
 router.get('/queue/status', webhookController.getQueueStatus);
 
+// --- 8. Detección Inteligente de Huecos & Estados de WhatsApp (Human-in-the-loop) ---
+router.get('/marketing/gaps', marketingController.getGapsAnalysis);
+router.post('/marketing/authorize-status', marketingController.authorizeStatus);
+router.get('/marketing/published-statuses', marketingController.getPublishedStatuses);
+router.get('/whatsapp/device', marketingController.getDeviceStatus);
+router.post('/whatsapp/device/toggle', marketingController.toggleDeviceConnection);
+
 export default router;
+
